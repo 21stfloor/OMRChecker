@@ -15,6 +15,7 @@ import platform
 from src.entry import entry_point, process_image
 from src.logger import logger
 from flask import Flask, request, jsonify
+import json
 
 def parse_args():
     # construct the argument parse and parse the arguments
@@ -95,11 +96,6 @@ def entry_point_for_args(args):
         )
 
 
-
-
-
-
-
 app = Flask(__name__)
 
 @app.route('/process_omr', methods=['POST'])
@@ -123,8 +119,9 @@ def process_omr():
     if not os.path.exists(input_dir):
         raise Exception(f"Given input directory does not exist: '{input_dir}'")
     
-    correct_answers = request.form.getlist('correct_answers')
-    
+    correct_answers_json = request.form.get('correct_answers', '[]')
+    correct_answers = json.loads(correct_answers_json)
+    print(f'correct_answers: {correct_answers}')
     try:
         result = process_image(
             uploaded_file,
