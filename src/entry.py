@@ -12,6 +12,7 @@ from pathlib import Path
 from time import time
 
 import cv2
+from flask import jsonify
 import pandas as pd
 from rich.table import Table
 
@@ -167,7 +168,7 @@ def process_dir(
             Empty directories not allowed."
         )
 
-    # recursively process sub-folders
+    #recursively process sub-folders
     for d in subdirs:
         process_dir(
             root_dir,
@@ -178,6 +179,77 @@ def process_dir(
             evaluation_config,
         )
 
+def process_image(
+    image_file,
+    curr_dir,
+    args,
+    template=None,
+    tuning_config=CONFIG_DEFAULTS,
+    evaluation_config=None,
+):
+    # Process the uploaded image using the provided template and configurations.
+    
+    # Update local tuning_config (in current recursion stack)
+    local_config_path = curr_dir.joinpath(constants.CONFIG_FILENAME)
+    if os.path.exists(local_config_path):
+        tuning_config = open_config_with_defaults(local_config_path)
+
+    # Update local template (in current recursion stack)
+    local_template_path = curr_dir.joinpath(constants.TEMPLATE_FILENAME)
+    local_template_exists = os.path.exists(local_template_path)
+    if local_template_exists:
+        template = Template(
+            local_template_path,
+            tuning_config,
+        )
+
+    # Create an output directory based on args
+    output_dir = Path(args["output_dir"])
+    paths = Paths(output_dir)
+    setup_dirs_for_paths(paths)
+    outputs_namespace = setup_outputs_for_template(paths, template)
+    
+    # Save the uploaded file to a temporary location for processing
+    temp_image_path = output_dir.joinpath(image_file.filename)
+    image_file.save(temp_image_path)
+
+    local_evaluation_path = curr_dir.joinpath(constants.EVALUATION_FILENAME)
+    if not args["setLayout"] and os.path.exists(local_evaluation_path):
+        if not local_template_exists:
+            logger.warning(
+                f"Found an evaluation file without a parent template file: {local_evaluation_path}"
+            )
+        evaluation_config = EvaluationConfig(
+            curr_dir,
+            local_evaluation_path,
+            template,
+            tuning_config,
+        )
+
+    # Process the single image
+    print_config_summary(
+        Path(args["output_dir"]),
+        [temp_image_path],
+        template,
+        tuning_config,
+        local_config_path,
+        evaluation_config,
+        args,
+    )
+    
+    # Process the image file
+    score, resp_array = process_files(
+        [temp_image_path],
+        template,
+        tuning_config,
+        evaluation_config,
+        outputs_namespace,
+    )
+
+    # Optionally, delete the temporary image file after processing
+    os.remove(temp_image_path)
+
+    return {'score': score, 'resp_array': resp_array}
 
 def show_template_layouts(omr_files, template, tuning_config):
     for file_path in omr_files:
@@ -330,6 +402,8 @@ def process_files(
             #     pass
 
     print_stats(start_time, files_counter, tuning_config)
+
+    return score, resp_array
 
 
 def check_and_move(error_code, file_path, filepath2):

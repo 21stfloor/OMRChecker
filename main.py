@@ -8,12 +8,13 @@
 """
 
 import argparse
+import os
 import sys
 from pathlib import Path
 
-from src.entry import entry_point
+from src.entry import entry_point, process_image
 from src.logger import logger
-
+from flask import Flask, request, jsonify
 
 def parse_args():
     # construct the argument parse and parse the arguments
@@ -94,6 +95,35 @@ def entry_point_for_args(args):
         )
 
 
-if __name__ == "__main__":
+
+
+
+
+
+app = Flask(__name__)
+
+@app.route('/process_omr', methods=['POST'])
+def process_omr():
+    # Get data from request
+    uploaded_file = request.files['file']  # Assuming OMR input is a file
     args = parse_args()
-    entry_point_for_args(args)
+    input_dir = Path(args["input_paths"][0])
+    if not os.path.exists(input_dir):
+        raise Exception(f"Given input directory does not exist: '{input_dir}'")
+    result = process_image(
+        uploaded_file,
+        input_dir,
+        args
+    )
+    # result = your_omr_module.process_omr(uploaded_file)  # Replace with your OMR processing logic
+
+    # Return the result as JSON
+    return jsonify(result)
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
+
+
+# if __name__ == "__main__":
+#     args = parse_args()
+#     entry_point_for_args(args)
