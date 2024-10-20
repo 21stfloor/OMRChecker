@@ -16,6 +16,15 @@ from src.entry import entry_point, process_image
 from src.logger import logger
 from flask import Flask, request, jsonify
 import json
+import firebase_admin
+from firebase_admin import credentials, storage
+from werkzeug.utils import secure_filename
+
+
+cred = credentials.Certificate("opticalmarkrecognition-f7059-firebase-adminsdk-ytgau-c14ddee08f.json")
+firebase_admin.initialize_app(cred, {
+    'storageBucket': 'opticalmarkrecognition-f7059.appspot.com'  # Replace with your Firebase storage bucket
+})
 
 def parse_args():
     # construct the argument parse and parse the arguments
@@ -121,7 +130,7 @@ def process_omr():
     
     correct_answers_json = request.form.get('correct_answers', '[]')
     correct_answers = json.loads(correct_answers_json)
-    print(f'correct_answers: {correct_answers}')
+    logger.info(f'correct_answers: {correct_answers}')
     try:
         result = process_image(
             uploaded_file,
@@ -136,6 +145,51 @@ def process_omr():
         return jsonify(result), 200
     except Exception as e:
         return str(e), 500
+
+
+
+# Set the upload folder and allowed extensions
+UPLOAD_FOLDER = 'uploads'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
+# Function to check allowed file extensions
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+# Route to upload an image
+@app.route('/upload', methods=['POST'])
+def upload_image():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file part'}), 400
+
+    file = request.files['file']
+
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'}), 400
+
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        local_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(local_path)
+
+        # Upload the file to Firebase storage
+        bucket = storage.bucket()
+        blob = bucket.blob(filename)
+        blob.upload_from_filename(local_path)
+
+        # Get the download URL
+        blob.make_public()
+        download_url = blob.public_url
+
+        # Optionally, remove the file from local storage after upload
+        os.remove(local_path)
+
+        return jsonify({'download_url': download_url}), 200
+
+    return jsonify({'error': 'File type not allowed'}), 400
+
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
