@@ -124,17 +124,21 @@ def process_omr():
         raise Exception(f"Given input directory does not exist: '{input_dir}'")
     
     correct_answers = request.form.getlist('correct_answers')
-    result = process_image(
-        uploaded_file,
-        input_dir,
-        args,
-        correct_answers,
-        question_count
-    )
-    # result = your_omr_module.process_omr(uploaded_file)  # Replace with your OMR processing logic
+    
+    try:
+        result = process_image(
+            uploaded_file,
+            input_dir,
+            args,
+            correct_answers,
+            question_count
+        )
+        # result = your_omr_module.process_omr(uploaded_file)  # Replace with your OMR processing logic
 
-    # Return the result as JSON
-    return jsonify(result), 200
+        # Return the result as JSON
+        return jsonify(result), 200
+    except Exception as e:
+        return str(e), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)

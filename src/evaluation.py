@@ -289,6 +289,14 @@ class EvaluationConfig:
             )
             answers_in_order = options["answers_in_order"]
 
+        count = len(correct_answers)
+        if count == 20:
+            self.questions_in_order = self.parse_questions_in_order(["q1..20"])
+        elif count == 50:
+            self.questions_in_order = self.parse_questions_in_order(["q1..50"])
+        elif count == 100:
+            self.questions_in_order = self.parse_questions_in_order(["q1..100"])
+
         answers_in_order = correct_answers
         self.validate_questions(answers_in_order)
 
@@ -351,7 +359,7 @@ class EvaluationConfig:
             question,
             current_score,
         )
-        return delta
+        return delta, question_verdict
 
     def conditionally_print_explanation(self):
         if self.should_explain_scoring:
@@ -511,13 +519,15 @@ class EvaluationConfig:
 def evaluate_concatenated_response(concatenated_response, evaluation_config):
     evaluation_config.prepare_and_validate_omr_response(concatenated_response)
     current_score = 0.0
+    verdicts = []
     for question in evaluation_config.questions_in_order:
         marked_answer = concatenated_response[question]
-        delta = evaluation_config.match_answer_for_question(
+        delta, verdict = evaluation_config.match_answer_for_question(
             current_score, question, marked_answer
         )
         current_score += delta
+        verdicts.append(verdict)
 
     evaluation_config.conditionally_print_explanation()
 
-    return current_score
+    return current_score, verdicts

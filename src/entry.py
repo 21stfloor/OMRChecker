@@ -241,7 +241,7 @@ def process_image(
     )
     
     # Process the image file
-    score, answers = process_files(
+    score, answers, verdicts = process_files(
         [temp_image_path],
         template,
         tuning_config,
@@ -252,7 +252,7 @@ def process_image(
     # Optionally, delete the temporary image file after processing
     os.remove(temp_image_path)
 
-    return {'score': score, 'answers': answers}
+    return {'score': score, 'answers': answers, 'verdicts': verdicts}
 
 def show_template_layouts(omr_files, template, tuning_config):
     for file_path in omr_files:
@@ -347,8 +347,9 @@ def process_files(
             logger.info(f"Read Response: \n{omr_response}")
 
         score = 0
+        verdicts = []
         if evaluation_config is not None:
-            score = evaluate_concatenated_response(omr_response, evaluation_config)
+            score, verdicts = evaluate_concatenated_response(omr_response, evaluation_config)
             logger.info(
                 f"(/{files_counter}) Graded with score: {round(score, 2)}\t for file: '{file_id}'"
             )
@@ -406,7 +407,7 @@ def process_files(
 
     print_stats(start_time, files_counter, tuning_config)
 
-    return score, resp_array
+    return score, resp_array, verdicts
 
 
 def check_and_move(error_code, file_path, filepath2):
