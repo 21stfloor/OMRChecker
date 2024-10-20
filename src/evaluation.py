@@ -188,7 +188,7 @@ class SectionMarkingScheme:
 class EvaluationConfig:
     """Note: this instance will be reused for multiple omr sheets"""
 
-    def __init__(self, curr_dir, evaluation_path, template, tuning_config):
+    def __init__(self, curr_dir, evaluation_path, template, tuning_config, correct_answers):
         self.path = evaluation_path
         evaluation_json = open_evaluation_with_validation(evaluation_path)
         options, marking_schemes, source_type = map(
@@ -289,6 +289,7 @@ class EvaluationConfig:
             )
             answers_in_order = options["answers_in_order"]
 
+        answers_in_order = correct_answers
         self.validate_questions(answers_in_order)
 
         self.section_marking_schemes, self.question_to_scheme = {}, {}

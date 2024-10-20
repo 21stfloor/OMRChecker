@@ -11,7 +11,7 @@ import argparse
 import os
 import sys
 from pathlib import Path
-
+import platform
 from src.entry import entry_point, process_image
 from src.logger import logger
 from flask import Flask, request, jsonify
@@ -116,13 +116,19 @@ def process_omr():
         question_count = 20
 
     args = parse_args()
-    input_dir = 'inputs'#Path(args["input_paths"][0])
+    if platform.system() == 'Windows':
+        input_dir = Path('inputs')  # Relative or absolute path for Windows
+    else:
+        input_dir = Path('/home/checkease/OMRChecker/inputs')
     if not os.path.exists(input_dir):
         raise Exception(f"Given input directory does not exist: '{input_dir}'")
+    
+    correct_answers = request.form.getlist('correct_answers')
     result = process_image(
         uploaded_file,
         input_dir,
         args,
+        correct_answers,
         question_count
     )
     # result = your_omr_module.process_omr(uploaded_file)  # Replace with your OMR processing logic

@@ -183,10 +183,11 @@ def process_image(
     image_file,
     curr_dir,
     args,
+    correct_answers,
     template=None,
     tuning_config=CONFIG_DEFAULTS,
     evaluation_config=None,
-    question_count=20
+    question_count=20,
 ):
     # Process the uploaded image using the provided template and configurations.
     
@@ -225,6 +226,7 @@ def process_image(
             local_evaluation_path,
             template,
             tuning_config,
+            correct_answers
         )
 
     # Process the single image
