@@ -4,7 +4,7 @@ from copy import deepcopy
 
 from freezegun import freeze_time
 
-from main import entry_point_for_args
+from flask_app import entry_point_for_args
 
 FROZEN_TIMESTAMP = "1970-01-01"
 
