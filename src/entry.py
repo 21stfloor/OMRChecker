@@ -241,7 +241,7 @@ def process_image(
     )
     
     # Process the image file
-    score, resp_array = process_files(
+    score, answers = process_files(
         [temp_image_path],
         template,
         tuning_config,
@@ -252,7 +252,7 @@ def process_image(
     # Optionally, delete the temporary image file after processing
     os.remove(temp_image_path)
 
-    return {'score': score, 'resp_array': resp_array}
+    return {'score': score, 'answers': answers}
 
 def show_template_layouts(omr_files, template, tuning_config):
     for file_path in omr_files:
