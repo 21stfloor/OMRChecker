@@ -1,0 +1,30 @@
+{
+    "pageDimensions": [ 800, 1000 ],
+    "bubbleDimensions": [ 25, 25 ],
+    "customLabels": {},
+    "fieldBlocks": {
+      "MCQBlock1": {
+        "fieldType": "QTYPE_MCQ5",
+        "origin": [ 270, 402 ],
+        "fieldLabels": ["q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q9", "q10"],
+        "bubblesGap": 24,
+        "labelsGap": 26
+      },
+
+      "MCQBlock2": {
+        "fieldType": "QTYPE_MCQ5",
+        "origin": [ 430, 402 ],
+        "fieldLabels": ["q11", "q12", "q13", "q14", "q15", "q16", "q17", "q18", "q19", "q20"],
+        "bubblesGap": 24,
+        "labelsGap": 26
+      }
+    },
+    "preProcessors": [
+      {
+        "name": "CropPage",
+        "options": {
+          "morphKernel": [ 10, 10 ]
+        }
+      }
+    ]
+  }

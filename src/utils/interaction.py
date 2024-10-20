@@ -38,6 +38,7 @@ class InteractionUtils:
         else:
             img = origin
 
+        cv2.namedWindow(name, cv2.WINDOW_NORMAL)
         cv2.imshow(name, img)
 
         if reset_pos:
