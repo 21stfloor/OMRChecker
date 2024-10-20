@@ -116,7 +116,7 @@ def process_omr():
         question_count = 20
 
     args = parse_args()
-    input_dir = Path(args["input_paths"][0])
+    input_dir = 'inputs'#Path(args["input_paths"][0])
     if not os.path.exists(input_dir):
         raise Exception(f"Given input directory does not exist: '{input_dir}'")
     result = process_image(
