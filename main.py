@@ -104,8 +104,17 @@ app = Flask(__name__)
 
 @app.route('/process_omr', methods=['POST'])
 def process_omr():
+        # Check if a file is part of the request
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file part in the request'}), 400
     # Get data from request
     uploaded_file = request.files['file']  # Assuming OMR input is a file
+
+    try:
+        question_count = int(request.form.get('question_count', 0))
+    except ValueError:
+        question_count = 20
+
     args = parse_args()
     input_dir = Path(args["input_paths"][0])
     if not os.path.exists(input_dir):
@@ -113,12 +122,13 @@ def process_omr():
     result = process_image(
         uploaded_file,
         input_dir,
-        args
+        args,
+        question_count
     )
     # result = your_omr_module.process_omr(uploaded_file)  # Replace with your OMR processing logic
 
     # Return the result as JSON
-    return jsonify(result)
+    return jsonify(result), 200
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)

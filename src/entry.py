@@ -186,6 +186,7 @@ def process_image(
     template=None,
     tuning_config=CONFIG_DEFAULTS,
     evaluation_config=None,
+    question_count=20
 ):
     # Process the uploaded image using the provided template and configurations.
     
@@ -195,7 +196,7 @@ def process_image(
         tuning_config = open_config_with_defaults(local_config_path)
 
     # Update local template (in current recursion stack)
-    local_template_path = curr_dir.joinpath(constants.TEMPLATE_FILENAME)
+    local_template_path = curr_dir.joinpath(f'{question_count}{constants.TEMPLATE_FILENAME}')
     local_template_exists = os.path.exists(local_template_path)
     if local_template_exists:
         template = Template(
