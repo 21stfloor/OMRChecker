@@ -246,6 +246,7 @@ class EvaluationConfig:
                     image=in_omr,
                     name=image_path,
                     save_dir=None,
+                    correct_answers=correct_answers
                 )
                 omr_response = get_concatenated_response(response_dict, template)
 

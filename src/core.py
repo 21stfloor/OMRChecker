@@ -36,7 +36,7 @@ class ImageInstanceOps:
             in_omr = pre_processor.apply_filter(in_omr, file_path)
         return in_omr
 
-    def read_omr_response(self, template, image, name, save_dir=None):
+    def read_omr_response(self, template, image, name, save_dir=None, correct_answers=[]):
         config = self.tuning_config
         auto_align = config.alignment_params.auto_align
         try:
@@ -255,6 +255,9 @@ class ImageInstanceOps:
             #     appendSaveImg(4,hist)
             #     appendSaveImg(5,hist)
             #     appendSaveImg(2,hist)
+            pt1s = []
+            pt2s = []
+            colors = [constants.CLR_RED for _ in range(len(correct_answers))]
 
             per_omr_threshold_avg, total_q_strip_no, total_q_box_no = 0, 0, 0
             for field_block in template.field_blocks:
@@ -312,19 +315,25 @@ class ImageInstanceOps:
                                     int(x + box_w - box_w / 12),
                                     int(y + box_h - box_h / 12),
                                 ),
-                                constants.CLR_DARK_GRAY,
+                                constants.CLR_GREEN,
                                 3,
                             )
 
-                            cv2.putText(
-                                final_marked,
-                                str(field_value),
-                                (x, y),
-                                cv2.FONT_HERSHEY_SIMPLEX,
-                                constants.TEXT_SIZE,
-                                (20, 20, 10),
-                                int(1 + 3.5 * constants.TEXT_SIZE),
-                            )
+                            pt1s.append((int(x + box_w / 12), int(y + box_h / 12)))
+                            pt2s.append((
+                                    int(x + box_w - box_w / 12),
+                                    int(y + box_h - box_h / 12),
+                                ))
+
+                            # cv2.putText(
+                            #     final_marked,
+                            #     str(field_value),
+                            #     (x, y),
+                            #     cv2.FONT_HERSHEY_SIMPLEX,
+                            #     constants.TEXT_SIZE,
+                            #     (20, 20, 10),
+                            #     int(1 + 3.5 * constants.TEXT_SIZE),
+                            # )
                         else:
                             cv2.rectangle(
                                 final_marked,
@@ -333,7 +342,7 @@ class ImageInstanceOps:
                                     int(x + box_w - box_w / 10),
                                     int(y + box_h - box_h / 10),
                                 ),
-                                constants.CLR_GRAY,
+                                constants.CLR_GREEN,
                                 -1,
                             )
 
@@ -352,6 +361,13 @@ class ImageInstanceOps:
                         # TODO: generalize this into identifier
                         # multi_roll = multi_marked_local and "Roll" in str(q)
                         multi_marked = multi_marked or multi_marked_local
+
+                        try:
+                            index = int(field_label[1:]) - 1
+                            if field_value == correct_answers[index]:
+                                colors[index] = constants.CLR_GREEN
+                        except Exception as e:
+                            logger.error(str(e))
 
                     if len(detected_bubbles) == 0:
                         field_label = field_block_bubbles[0].field_label
@@ -412,7 +428,11 @@ class ImageInstanceOps:
                 if multi_roll:
                     save_dir = save_dir.joinpath("_MULTI_")
                 image_path = str(save_dir.joinpath(name))
-                ImageUtils.save_img(image_path, final_marked)
+
+                image_colored = cv2.cvtColor(final_marked, cv2.COLOR_GRAY2BGR)
+                for pt1, pt2, color in zip(pt1s, pt2s, colors):
+                    cv2.rectangle(image_colored, pt1, pt2, color, thickness=2)
+                ImageUtils.save_img(image_path, image_colored)
 
             self.append_save_img(2, final_marked)
 

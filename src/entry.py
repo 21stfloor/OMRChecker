@@ -250,6 +250,7 @@ def process_image(
         tuning_config,
         evaluation_config,
         outputs_namespace,
+        correct_answers=correct_answers
     )
 
     # Optionally, delete the temporary image file after processing
@@ -279,6 +280,7 @@ def process_files(
     tuning_config,
     evaluation_config,
     outputs_namespace,
+    correct_answers=[]
 ):
     start_time = int(time())
     files_counter = 0
@@ -337,7 +339,7 @@ def process_files(
             _,
             image_path
         ) = template.image_instance_ops.read_omr_response(
-            template, image=in_omr, name=file_id, save_dir=save_dir
+            template, image=in_omr, name=file_id, save_dir=save_dir, correct_answers=correct_answers
         )
 
         download_url = None
