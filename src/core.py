@@ -255,8 +255,8 @@ class ImageInstanceOps:
             #     appendSaveImg(4,hist)
             #     appendSaveImg(5,hist)
             #     appendSaveImg(2,hist)
-            pt1s = []
-            pt2s = []
+            pt1s = [None for _ in range(len(correct_answers))]
+            pt2s = [None for _ in range(len(correct_answers))]
             colors = [constants.CLR_RED for _ in range(len(correct_answers))]
 
             per_omr_threshold_avg, total_q_strip_no, total_q_box_no = 0, 0, 0
@@ -319,11 +319,7 @@ class ImageInstanceOps:
                                 3,
                             )
 
-                            pt1s.append((int(x + box_w / 12), int(y + box_h / 12)))
-                            pt2s.append((
-                                    int(x + box_w - box_w / 12),
-                                    int(y + box_h - box_h / 12),
-                                ))
+                            
 
                             # cv2.putText(
                             #     final_marked,
@@ -345,7 +341,7 @@ class ImageInstanceOps:
                                 constants.CLR_GREEN,
                                 -1,
                             )
-
+                            
                     for bubble in detected_bubbles:
                         field_label, field_value = (
                             bubble.field_label,
@@ -362,10 +358,24 @@ class ImageInstanceOps:
                         # multi_roll = multi_marked_local and "Roll" in str(q)
                         multi_marked = multi_marked or multi_marked_local
 
+                        x, y, field_value = (
+                            bubble.x + field_block.shift,
+                            bubble.y,
+                            bubble.field_value,
+                        )
+
+                        
+
                         try:
                             index = int(field_label[1:]) - 1
                             if field_value == correct_answers[index]:
                                 colors[index] = constants.CLR_GREEN
+
+                            pt1s[index] =(int(x + box_w / 12), int(y + box_h / 12))
+                            pt2s[index] = (
+                                    int(x + box_w - box_w / 12),
+                                    int(y + box_h - box_h / 12),
+                                )
                         except Exception as e:
                             logger.error(str(e))
 
@@ -432,7 +442,8 @@ class ImageInstanceOps:
                 image_colored = cv2.cvtColor(final_marked, cv2.COLOR_GRAY2BGR)
                 try:
                     for pt1, pt2, color in zip(pt1s, pt2s, colors):
-                        cv2.rectangle(image_colored, pt1, pt2, color, thickness=2)
+                        if pt1 is not None and pt2 is not None:
+                            cv2.rectangle(image_colored, pt1, pt2, color, thickness=2)
                 except Exception as e:
                     logger.error(str(e))
                 ImageUtils.save_img(image_path, image_colored)
