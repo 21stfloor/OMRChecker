@@ -130,7 +130,7 @@ def process_omr():
             input_dir,
             args,
             correct_answers,
-            question_count
+            question_count=question_count
         )
         # result = your_omr_module.process_omr(uploaded_file)  # Replace with your OMR processing logic
 
