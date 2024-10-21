@@ -25,6 +25,9 @@ from src.utils.file import Paths, setup_dirs_for_paths, setup_outputs_for_templa
 from src.utils.image import ImageUtils
 from src.utils.interaction import InteractionUtils, Stats
 from src.utils.parsing import get_concatenated_response, open_config_with_defaults
+from uploader import upload_file_to_firebase
+
+
 
 # Load processors
 STATS = Stats()
@@ -241,7 +244,7 @@ def process_image(
     )
     
     # Process the image file
-    score, answers, verdicts = process_files(
+    score, answers, verdicts, image_url = process_files(
         [temp_image_path],
         template,
         tuning_config,
@@ -252,7 +255,7 @@ def process_image(
     # Optionally, delete the temporary image file after processing
     os.remove(temp_image_path)
 
-    return {'score': score, 'answers': answers, 'verdicts': verdicts}
+    return {'score': score, 'answers': answers, 'verdicts': verdicts, 'image_url': image_url}
 
 def show_template_layouts(omr_files, template, tuning_config):
     for file_path in omr_files:
@@ -332,9 +335,16 @@ def process_files(
             final_marked,
             multi_marked,
             _,
+            image_path
         ) = template.image_instance_ops.read_omr_response(
             template, image=in_omr, name=file_id, save_dir=save_dir
         )
+
+        download_url = None
+        try:
+            download_url = upload_file_to_firebase(image_path)
+        except Exception as e:
+            logger.error(str(e))
 
         # TODO: move inner try catch here
         # concatenate roll nos, set unmarked responses, etc
@@ -407,7 +417,7 @@ def process_files(
 
     print_stats(start_time, files_counter, tuning_config)
 
-    return score, resp_array, verdicts
+    return score, resp_array, verdicts, download_url
 
 
 def check_and_move(error_code, file_path, filepath2):
@@ -444,3 +454,4 @@ def print_stats(start_time, files_counter, tuning_config):
         log(
             "\nTip: To see some awesome visuals, open config.json and increase 'show_image_level'"
         )
+

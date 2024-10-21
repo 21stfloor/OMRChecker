@@ -407,7 +407,7 @@ class ImageInstanceOps:
                 InteractionUtils.show(
                     "Template Alignment Adjustment", final_align, 0, 0, config=config
                 )
-
+            image_path = None
             if config.outputs.save_detections and save_dir is not None:
                 if multi_roll:
                     save_dir = save_dir.joinpath("_MULTI_")
@@ -420,7 +420,7 @@ class ImageInstanceOps:
                 for i in range(config.outputs.save_image_level):
                     self.save_image_stacks(i + 1, name, save_dir)
 
-            return omr_response, final_marked, multi_marked, multi_roll
+            return omr_response, final_marked, multi_marked, multi_roll, image_path
 
         except Exception as e:
             raise e
