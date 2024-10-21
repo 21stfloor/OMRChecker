@@ -430,8 +430,11 @@ class ImageInstanceOps:
                 image_path = str(save_dir.joinpath(name))
 
                 image_colored = cv2.cvtColor(final_marked, cv2.COLOR_GRAY2BGR)
-                for pt1, pt2, color in zip(pt1s, pt2s, colors):
-                    cv2.rectangle(image_colored, pt1, pt2, color, thickness=2)
+                try:
+                    for pt1, pt2, color in zip(pt1s, pt2s, colors):
+                        cv2.rectangle(image_colored, pt1, pt2, color, thickness=2)
+                except Exception as e:
+                    logger.error(str(e))
                 ImageUtils.save_img(image_path, image_colored)
 
             self.append_save_img(2, final_marked)
