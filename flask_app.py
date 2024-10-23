@@ -126,6 +126,7 @@ def process_omr():
     logger.info(f'correct_answers: {correct_answers}')
 
     for_answer_key = request.form.get('for_answer_key', 'false').lower() == 'true'
+    logger.info(f'for_answer_key: {for_answer_key}')
     try:
         result = process_image(
             uploaded_file,
