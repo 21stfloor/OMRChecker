@@ -191,6 +191,7 @@ def process_image(
     tuning_config=CONFIG_DEFAULTS,
     evaluation_config=None,
     question_count=20,
+    for_answer_key=False
 ):
     # Process the uploaded image using the provided template and configurations.
     
@@ -280,7 +281,8 @@ def process_files(
     tuning_config,
     evaluation_config,
     outputs_namespace,
-    correct_answers=[]
+    correct_answers=[],
+    for_answer_key=False
 ):
     start_time = int(time())
     files_counter = 0
@@ -339,7 +341,7 @@ def process_files(
             _,
             image_path
         ) = template.image_instance_ops.read_omr_response(
-            template, image=in_omr, name=file_id, save_dir=save_dir, correct_answers=correct_answers
+            template, image=in_omr, name=file_id, save_dir=save_dir, correct_answers=correct_answers, for_answer_key=for_answer_key
         )
 
         download_url = None

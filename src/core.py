@@ -36,7 +36,7 @@ class ImageInstanceOps:
             in_omr = pre_processor.apply_filter(in_omr, file_path)
         return in_omr
 
-    def read_omr_response(self, template, image, name, save_dir=None, correct_answers=[]):
+    def read_omr_response(self, template, image, name, save_dir=None, correct_answers=[], for_answer_key=False):
         config = self.tuning_config
         auto_align = config.alignment_params.auto_align
         try:
@@ -368,7 +368,7 @@ class ImageInstanceOps:
 
                         try:
                             index = int(field_label[1:]) - 1
-                            if field_value == correct_answers[index]:
+                            if field_value == correct_answers[index] or for_answer_key:
                                 colors[index] = constants.CLR_GREEN
 
                             pt1s[index] =(int(x + box_w / 12), int(y + box_h / 12))

@@ -170,6 +170,13 @@
         "options": {
           "morphKernel": [ 10, 10 ]
         }
+      },
+      {
+        "name": "CropOnMarkers",
+        "options": {
+          "relativePath": "omr_marker.jpg",
+          "sheetToMarkerWidthRatio": 17
+        }
       }
     ]
   }

@@ -124,13 +124,16 @@ def process_omr():
     correct_answers_json = request.form.get('correct_answers', '[\"A\"]')
     correct_answers = json.loads(correct_answers_json)
     logger.info(f'correct_answers: {correct_answers}')
+
+    for_answer_key = request.form.get('for_answer_key', 'false').lower() == 'true'
     try:
         result = process_image(
             uploaded_file,
             input_dir,
             args,
             correct_answers,
-            question_count=question_count
+            question_count=question_count,
+            for_answer_key=for_answer_key
         )
         # result = your_omr_module.process_omr(uploaded_file)  # Replace with your OMR processing logic
 
