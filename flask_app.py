@@ -111,7 +111,7 @@ def process_omr():
     try:
         question_count = int(request.form.get('question_count', 0))
     except ValueError:
-        question_count = 20
+        question_count = 50
 
     args = parse_args()
     if platform.system() == 'Windows':
@@ -144,7 +144,7 @@ def process_omr():
         return str(e), 500
 
 
-
+ 
 
 
 
