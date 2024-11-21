@@ -1,11 +1,11 @@
 {
     "pageDimensions": [ 800, 1000 ],
-    "bubbleDimensions": [ 48, 48 ],
+    "bubbleDimensions": [ 50, 50 ],
     "customLabels": {},
     "fieldBlocks": {
       "MCQBlock1": {
         "fieldType": "QTYPE_MCQ4",
-        "origin": [ 72, 90 ],
+        "origin": [ 72, 87 ],
         "fieldLabels": ["q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q9", "q10", "q11", "q12", "q13", "q14", "q15", "q16", "q17"],
         "bubblesGap": 45,
         "labelsGap": 52
@@ -13,7 +13,7 @@
 
       "MCQBlock2": {
         "fieldType": "QTYPE_MCQ4",
-        "origin": [ 327, 90 ],
+        "origin": [ 327, 87 ],
         "fieldLabels": ["q18", "q19", "q20", "q21", "q22", "q23", "q24", "q25", "q26", "q27", "q28", "q29", "q30", "q31", "q32", "q33", "q34"],
         "bubblesGap": 45,
         "labelsGap": 52
@@ -21,7 +21,7 @@
 
       "MCQBlock3": {
         "fieldType": "QTYPE_MCQ4",
-        "origin": [ 582, 90 ],
+        "origin": [ 582, 87 ],
         "fieldLabels": ["q35", "q36", "q37", "q38", "q39", "q40", "q41", "q42", "q43", "q44", "q45", "q46", "q47", "q48", "q49", "q50"],
         "bubblesGap": 45,
         "labelsGap": 52
