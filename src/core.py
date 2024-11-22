@@ -297,8 +297,10 @@ class ImageInstanceOps:
                     # TODO: get rid of total_q_box_no
                     detected_bubbles = []
                     for bubble in field_block_bubbles:
+                        current_q_val = all_q_vals[total_q_box_no]
+                        some_margin = 20
                         bubble_is_marked = (
-                            per_q_strip_threshold > all_q_vals[total_q_box_no]
+                            per_q_strip_threshold > current_q_val + some_margin
                         )
                         total_q_box_no += 1
                         if bubble_is_marked:
@@ -308,16 +310,16 @@ class ImageInstanceOps:
                                 bubble.y,
                                 bubble.field_value,
                             )
-                            cv2.rectangle(
-                                final_marked,
-                                (int(x + box_w / 12), int(y + box_h / 12)),
-                                (
-                                    int(x + box_w - box_w / 12),
-                                    int(y + box_h - box_h / 12),
-                                ),
-                                constants.CLR_GREEN,
-                                3,
-                            )
+                            # cv2.rectangle(
+                            #     final_marked,
+                            #     (int(x + box_w / 12), int(y + box_h / 12)),
+                            #     (
+                            #         int(x + box_w - box_w / 12),
+                            #         int(y + box_h - box_h / 12),
+                            #     ),
+                            #     constants.CLR_GREEN,
+                            #     3,
+                            # )
 
                             
 
@@ -330,17 +332,17 @@ class ImageInstanceOps:
                             #     (20, 20, 10),
                             #     int(1 + 3.5 * constants.TEXT_SIZE),
                             # )
-                        else:
-                            cv2.rectangle(
-                                final_marked,
-                                (int(x + box_w / 10), int(y + box_h / 10)),
-                                (
-                                    int(x + box_w - box_w / 10),
-                                    int(y + box_h - box_h / 10),
-                                ),
-                                constants.CLR_GREEN,
-                                -1,
-                            )
+                        # else:
+                        #     cv2.rectangle(
+                        #         final_marked,
+                        #         (int(x + box_w / 10), int(y + box_h / 10)),
+                        #         (
+                        #             int(x + box_w - box_w / 10),
+                        #             int(y + box_h - box_h / 10),
+                        #         ),
+                        #         constants.CLR_RED,
+                        #         -1,
+                        #     )
                             
                     for bubble in detected_bubbles:
                         field_label, field_value = (
@@ -358,17 +360,17 @@ class ImageInstanceOps:
                         # multi_roll = multi_marked_local and "Roll" in str(q)
                         multi_marked = multi_marked or multi_marked_local
 
-                        x, y, field_value = (
+                        x, y = (
                             bubble.x + field_block.shift,
-                            bubble.y,
-                            bubble.field_value,
+                            bubble.y
                         )
 
                         
 
                         try:
                             index = int(field_label[1:]) - 1
-                            if field_value == correct_answers[index] or for_answer_key:
+                            # if field_value == correct_answers[index] or for_answer_key:
+                            if (len(detected_bubbles) == 1 and detected_bubbles[0].field_value == correct_answers[index]) or for_answer_key:
                                 colors[index] = constants.CLR_GREEN
 
                             pt1s[index] =(int(x + box_w / 12), int(y + box_h / 12))
