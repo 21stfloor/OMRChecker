@@ -26,15 +26,7 @@
         "bubblesGap": 45,
         "labelsGap": 52
       }
-    },
-    "preProcessors": [
-      {
-        "name": "CropPage",
-        "options": {
-          "morphKernel": [ 10, 10 ]
-        }
-      }
-    ]
+    }
     
     
   }
